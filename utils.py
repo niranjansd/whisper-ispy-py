@@ -4,6 +4,9 @@ import pyttsx3
 import wave
 import tempfile
 import os
+import tkinter as tk
+from PIL import Image, ImageTk
+import itertools
 
 
 def open_file(filepath):
@@ -119,3 +122,55 @@ def speak(text, audio):
     if not text:
         return
     play_audio(tts(text), audio)
+
+
+class ImageLabel(tk.Label):
+    """
+    A Label that displays images, and plays them if they are gifs
+    :im: A PIL Image instance or a string filename
+    """
+    def load(self, im):
+        if isinstance(im, str):
+            im = Image.open(im)
+        # frames = []
+        self.frames = []
+ 
+        try:
+            for i in itertools.count(1):
+                self.frames.append(ImageTk.PhotoImage(im.copy()))
+                # frames.append(ImageTk.PhotoImage(im.copy()))
+                im.seek(i)
+        except EOFError:
+            pass
+        # self.frames = itertools.cycle(frames)
+ 
+        try:
+            self.delay = im.info['duration']
+        except:
+            self.delay = 100
+ 
+        if len(self.frames) == 1:
+            self.config(image=self.frames.pop(0))
+        else:
+            self.next_frame()
+        # if len(frames) == 1:
+        #     self.config(image=next(self.frames))
+        # else:
+        #     self.next_frame()
+ 
+    def unload(self):
+        self.config(image=None)
+        self.frames = None
+ 
+    def next_frame(self):
+        if self.frames:
+            self.config(image=self.frames.pop(0))
+            # self.config(image=next(self.frames))
+            self.after(self.delay, self.next_frame)
+ 
+#demo :
+# root = tk.Tk()
+# lbl = ImageLabel(root)
+# lbl.pack()
+# lbl.load('tenor.gif')
+# root.mainloop()
