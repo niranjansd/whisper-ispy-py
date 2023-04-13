@@ -86,6 +86,7 @@ def listen_and_transcribe(corans, audio):
         ans = transcribe_audio(au, audio)
         if not ans:
             continue
+        print(ans)
         if corans.lower() in ans.lower():
             stream.stop_stream()
             stream.close()
@@ -152,7 +153,7 @@ class ImageLabel(tk.Label):
         if len(self.frames) == 1:
             self.config(image=self.frames.pop(0))
         else:
-            self.next_frame()
+            self.play()
         # if len(frames) == 1:
         #     self.config(image=next(self.frames))
         # else:
@@ -162,7 +163,7 @@ class ImageLabel(tk.Label):
         self.config(image=None)
         self.frames = None
  
-    def next_frame(self):
+    def play_once(self):
         if self.frames:
             self.config(image=self.frames.pop(0))
             # self.config(image=next(self.frames))
